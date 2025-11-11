@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "wikipedia-terminal"
+version = "0.1.0"
+description = "A terminal-based user interface for searching Wikipedia using the curses library."
+authors = ["Your Name <youremail@example.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+curses = { version = "*", markers = "sys_platform != 'win32'" }
+# Add other dependencies here as needed
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

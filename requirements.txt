@@ -1,0 +1,8 @@
+# Core dependencies
+zimply>=1.1.0
+prompt-toolkit>=3.0.0
+
+# Optional dependencies for better performance
+# Uncomment if needed:
+# lxml>=4.9.0  # Faster HTML parsing
+# cchardet>=2.1.7  # Faster encoding detection
