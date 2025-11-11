@@ -186,24 +186,48 @@ pytest
 
 ## 🗺️ Roadmap
 
-See [GitHub Issues](https://github.com/rafaelchandane/wikipedia-terminal/issues) for planned features.
+See [GitHub Issues](https://github.com/rafaelchandane/wikipedia-terminal/issues) for planned features and to vote on priorities.
 
-**v0.1.0** (Current)
+**v0.1.0** (Current - Released)
 - ✅ Basic search and article viewing
 - ✅ Pagination support
 - ✅ Cross-platform compatibility
+- ✅ Binary search through ZIM files
+- ✅ HTML to plain text conversion
 
-**v0.2.0** (Planned)
-- [ ] Full-text search (FTS5)
-- [ ] Search history with arrow keys
+**v0.1.1** (Quick Win - In Progress)
+- [ ] Complete FTS5 full-text search implementation
+- [ ] Add `--build-index` command for creating search databases
+- [ ] Progress bars and ETA for index building
+- [ ] Resume support for interrupted index builds
+
+**v0.2.0** (Foundation - Next Major Release)
+- [ ] Better HTML rendering (tables, lists, formatting)
+- [ ] Image alt-text display
+- [ ] Search history persistence
+- [ ] Configuration file support (`~/.wikipedia_tui/config.yaml`)
+- [ ] Improved text wrapping and formatting
+
+**v0.3.0** (Enhanced UX)
+- [ ] Internal link following with numbered references
+- [ ] Navigation history (back/forward through articles)
 - [ ] Bookmarks system
-- [ ] Configuration file
+- [ ] Random article feature
+- [ ] Search within current article
 
-**v1.0.0** (Future)
-- [ ] Internal link following
+**v1.0.0** (Major Features)
 - [ ] Multiple ZIM file support
-- [ ] Better HTML rendering
-- [ ] Export to Markdown/PDF
+- [ ] Advanced search filters (by category, date, etc.)
+- [ ] Enhanced terminal UI (colors, borders, status bar)
+- [ ] Table of contents navigation
+- [ ] Article categories and metadata display
+
+**v2.0.0** (Future Ideas)
+- [ ] Export articles to Markdown/PDF
+- [ ] Plugin system for extensions
+- [ ] Optional image viewing support
+- [ ] Collaborative annotations
+- [ ] Offline article updates/syncing
 
 ## 📝 FAQ
 
