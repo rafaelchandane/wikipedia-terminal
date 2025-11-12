@@ -7,6 +7,10 @@ from typing import List, Optional
 import re
 import html as _html
 import threading
+import warnings
+
+# Suppress zimply's pkg_resources deprecation warning
+warnings.filterwarnings("ignore", message=".*pkg_resources.*")
 
 try:
     from zimply.zimply import ZIMFile

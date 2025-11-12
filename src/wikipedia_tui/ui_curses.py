@@ -7,6 +7,10 @@ import os
 import sys
 import textwrap
 import html as _html_lib
+import warnings
+
+# Suppress zimply's pkg_resources deprecation warning
+warnings.filterwarnings("ignore", message=".*pkg_resources.*")
 
 # Minimal curses stub for Windows compatibility
 try:

@@ -7,7 +7,11 @@ import sys
 import os
 import json
 import tempfile
+import warnings
 from typing import Optional, List
+
+# Suppress zimply's pkg_resources deprecation warning
+warnings.filterwarnings("ignore", message=".*pkg_resources.*")
 
 try:
     from . import zim_access
