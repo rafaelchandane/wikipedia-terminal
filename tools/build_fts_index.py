@@ -9,6 +9,13 @@ import time
 import sys
 import os
 
+try:
+    from tqdm import tqdm
+    HAS_TQDM = True
+except ImportError:
+    HAS_TQDM = False
+    print("Note: Install tqdm for progress bars: pip install tqdm")
+
 # Add src to path so imports work
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
@@ -97,10 +104,26 @@ def build_index(zim_path: str, db_path: str, batch: int = 500, replace: bool = F
 
     print(f"Indexing ZIM file: {zim_path}")
     print(f"Output database: {db_path}")
-    print("Starting indexing (this may take a while for large ZIMs)...\n")
+    print(f"Batch size: {batch}")
+    print()
     
     try:
-        for title in iter_titles(zim_path):
+        # Create iterator
+        title_iter = iter_titles(zim_path)
+        
+        # Wrap with tqdm if available
+        if HAS_TQDM:
+            title_iter = tqdm(
+                title_iter,
+                desc="Indexing articles",
+                unit=" articles",
+                dynamic_ncols=True,
+                colour="green"
+            )
+        else:
+            print("Starting indexing (this may take a while for large ZIMs)...\n")
+        
+        for title in title_iter:
             total += 1
             content = get_content_for_title(title, zim_path) or ""
             body = " ".join(content.split())
@@ -110,7 +133,15 @@ def build_index(zim_path: str, db_path: str, batch: int = 500, replace: bool = F
                 cur.executemany("INSERT INTO articles(title, body) VALUES (?, ?);", batch_rows)
                 conn.commit()
                 inserted += len(batch_rows)
-                print(f"Indexed {inserted} articles... (total seen: {total})", flush=True)
+                
+                # Update progress without tqdm
+                if not HAS_TQDM:
+                    elapsed = time.time() - start_time
+                    rate = inserted / elapsed if elapsed > 0 else 0
+                    eta_seconds = (total - inserted) / rate if rate > 0 else 0
+                    eta_str = f"{eta_seconds/60:.1f} min" if eta_seconds > 60 else f"{eta_seconds:.0f}s"
+                    print(f"Indexed {inserted:,} articles... (seen: {total:,}, {rate:.1f}/s, ETA: {eta_str})", flush=True)
+                
                 batch_rows.clear()
 
         if batch_rows:
@@ -127,8 +158,9 @@ def build_index(zim_path: str, db_path: str, batch: int = 500, replace: bool = F
     elapsed = time.time() - start_time
     print(f"\n{'='*60}")
     print(f"Done!")
-    print(f"Titles seen: {total}")
-    print(f"Articles inserted: {inserted}")
+    print(f"Titles seen: {total:,}")
+    print(f"Articles inserted: {inserted:,}")
+    print(f"Average rate: {inserted/elapsed:.1f} articles/second" if elapsed > 0 else "")
     print(f"Time: {elapsed:.1f}s ({elapsed/60:.1f} minutes)")
     print(f"Database: {db_path}")
     print(f"{'='*60}")

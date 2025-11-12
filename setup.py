@@ -13,7 +13,7 @@ def read_requirements():
         with open("requirements.txt", "r", encoding="utf-8") as f:
             return [line.strip() for line in f if line.strip() and not line.startswith("#")]
     except FileNotFoundError:
-        return ["zimply>=1.1.0", "prompt-toolkit>=3.0.0"]
+        return ["zimply>=1.1.0", "prompt-toolkit>=3.0.0", "tqdm>=4.65.0"]
 
 setup(
     name="wikipedia-terminal",

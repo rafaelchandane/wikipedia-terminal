@@ -18,6 +18,7 @@
 - 🖥️ **Cross-Platform** - Works on Windows, macOS, and Linux
 - 🪶 **Lightweight** - No web server, direct ZIM file access
 - 📦 **Pipe-Friendly** - Pipe output to other command-line tools
+- 📊 **Progress Tracking** - Visual progress bars with ETA for index building
 
 ## 🎥 Demo
 
@@ -364,7 +365,7 @@ See [GitHub Issues](https://github.com/rafaelchandane/wikipedia-terminal/issues)
 
 **v0.1.1** (Quick Win - In Progress)
 - [ ] Complete FTS5 full-text search implementation
-- [ ] Progress bars and ETA for index building
+- ✅ Progress bars and ETA for index building
 - [ ] Resume support for interrupted index builds
 
 **v0.2.0** (Foundation - Next Major Release)

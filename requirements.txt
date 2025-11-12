@@ -1,6 +1,7 @@
 # Core dependencies
 zimply>=1.1.0
 prompt-toolkit>=3.0.0
+tqdm>=4.65.0  # Progress bars for indexing
 
 # Optional dependencies for better performance
 # Uncomment if needed:
