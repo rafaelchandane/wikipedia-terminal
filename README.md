@@ -19,6 +19,7 @@
 - 🪶 **Lightweight** - No web server, direct ZIM file access
 - 📦 **Pipe-Friendly** - Pipe output to other command-line tools
 - 📊 **Progress Tracking** - Visual progress bars with ETA for index building
+- 🔙 **History Navigation** - Browse articles with back/forward like a web browser
 
 ## 🎥 Demo
 
@@ -221,12 +222,19 @@ wiki build-index wikipedia.zim --batch 1000 --replace
 
 ### Navigation (Interactive Mode)
 
+**While Searching:**
 - **Search**: Type your query and press Enter
 - **Select Article**: Type the article number (1, 2, 3...)
+
+**While Reading Articles:**
 - **Next Page**: Press `n`
 - **Previous Page**: Press `p`
-- **Go Back**: Press `b` or Enter
+- **Back to Previous Article**: Press `b`, `back`, or `<` (NEW! ⭐)
+- **Forward to Next Article**: Press `f`, `forward`, or `>` (NEW! ⭐)
+- **Return to Search**: Press Enter
 - **Quit**: Press `q`
+
+**History Navigation** - Browse articles like a web browser! The app remembers every article you view, so you can easily navigate back and forward through your reading history.
 
 ### Examples
 
@@ -368,7 +376,8 @@ See [GitHub Issues](https://github.com/rafaelchandane/wikipedia-terminal/issues)
 - ✅ Progress bars and ETA for index building
 - [ ] Resume support for interrupted index builds
 
-**v0.2.0** (Foundation - Next Major Release)
+**v0.2.0** (Foundation - In Progress)
+- ✅ Navigation history (back/forward through articles)
 - [ ] Better HTML rendering (tables, lists, formatting)
 - [ ] Image alt-text display
 - [ ] Search history persistence
@@ -377,7 +386,6 @@ See [GitHub Issues](https://github.com/rafaelchandane/wikipedia-terminal/issues)
 
 **v0.3.0** (Enhanced UX)
 - [ ] Internal link following with numbered references
-- [ ] Navigation history (back/forward through articles)
 - [ ] Bookmarks system
 - [ ] Random article feature
 - [ ] Search within current article

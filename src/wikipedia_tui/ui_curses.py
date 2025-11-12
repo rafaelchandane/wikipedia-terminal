@@ -93,13 +93,18 @@ def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def _view_article(article_text: str, session: PromptSession):
+def _view_article(article_text: str, session: PromptSession, can_go_back: bool = False, can_go_forward: bool = False) -> str:
     """
     Display article content with pagination.
     
     Args:
         article_text: Article content to display
         session: PromptSession instance for user input
+        can_go_back: Whether back navigation is available
+        can_go_forward: Whether forward navigation is available
+        
+    Returns:
+        Navigation command: '', 'back', 'forward', 'quit', or 'exit'
     """
     if not article_text:
         article_text = "<no content>"
@@ -133,25 +138,40 @@ def _view_article(article_text: str, session: PromptSession):
                     style=FALLOUT_STYLE
                 )
             
+            # Build navigation hints
+            nav_hints = []
+            if page + 1 < total_pages or page > 0:
+                nav_hints.append("n/p nav")
+            if can_go_back:
+                nav_hints.append("← back")
+            if can_go_forward:
+                nav_hints.append("→ forward")
+            nav_hints.append("Enter to search")
+            nav_hints.append("q quit")
+            
             # Display navigation footer
             print_formatted_text(
-                HTML(f"\n<b><ansibrightgreen>Page {page+1}/{total_pages}</ansibrightgreen></b> — n/p nav, b back, q quit"), 
+                HTML(f"\n<b><ansibrightgreen>Page {page+1}/{total_pages}</ansibrightgreen></b> — {', '.join(nav_hints)}"), 
                 style=FALLOUT_STYLE
             )
 
         try:
             cmd = get_user_input(session, "> ").strip().lower()
         except (KeyboardInterrupt, EOFError):
-            return
+            return "exit"
 
-        if cmd in ("b", ""):
-            return
+        if cmd == "":
+            return ""  # Return to search
         elif cmd == "n" and page + 1 < total_pages:
             page += 1
         elif cmd == "p" and page > 0:
             page -= 1
+        elif cmd in ("b", "back", "<") and can_go_back:
+            return "back"
+        elif cmd in ("f", "forward", ">") and can_go_forward:
+            return "forward"
         elif cmd == "q":
-            sys.exit(0)
+            return "quit"
 
 
 def run_prompt_ui(zim_path: Optional[str] = None):
@@ -168,6 +188,10 @@ def run_prompt_ui(zim_path: Optional[str] = None):
     status = "Type a query and press Enter. q to quit."
     articles: List[str] = []
     fts_results = None  # Cache for FTS results
+    
+    # Article history navigation
+    article_history: List[dict] = []  # List of {title, content}
+    history_index = -1  # Current position in history (-1 = not viewing from history)
 
     while True:
         try:
@@ -220,6 +244,7 @@ def run_prompt_ui(zim_path: Optional[str] = None):
                 idx = int(user_input) - 1
                 if 0 <= idx < len(articles):
                     content = None
+                    title = articles[idx]
                     
                     # Try FTS index first (faster if available)
                     if fts_results is not None and fts_index is not None:
@@ -231,7 +256,7 @@ def run_prompt_ui(zim_path: Optional[str] = None):
                     # Fall back to ZIM file access
                     if not content:
                         try:
-                            content = zim_access.get_article_content(articles[idx], zim_path)
+                            content = zim_access.get_article_content(title, zim_path)
                         except FileNotFoundError as e:
                             status = f"Error: {e}"
                             continue
@@ -239,8 +264,38 @@ def run_prompt_ui(zim_path: Optional[str] = None):
                             status = f"Failed to load article: {e}"
                             continue
                     
-                    # Display article
-                    _view_article(content if content else articles[idx], session)
+                    # Add to history (truncate forward history if navigating from middle)
+                    if history_index < len(article_history) - 1:
+                        article_history = article_history[:history_index + 1]
+                    
+                    article_history.append({"title": title, "content": content if content else title})
+                    history_index = len(article_history) - 1
+                    
+                    # Display article with navigation
+                    while True:
+                        can_go_back = history_index > 0
+                        can_go_forward = history_index < len(article_history) - 1
+                        current_article = article_history[history_index]
+                        
+                        nav_result = _view_article(
+                            current_article["content"], 
+                            session,
+                            can_go_back=can_go_back,
+                            can_go_forward=can_go_forward
+                        )
+                        
+                        if nav_result == "back" and can_go_back:
+                            history_index -= 1
+                            status = f"← Back to: {article_history[history_index]['title'][:60]}"
+                        elif nav_result == "forward" and can_go_forward:
+                            history_index += 1
+                            status = f"→ Forward to: {article_history[history_index]['title'][:60]}"
+                        elif nav_result == "quit":
+                            sys.exit(0)
+                        else:
+                            # Return to search (empty or exit)
+                            break
+                    
                     continue
                 else:
                     status = f"Invalid number. Enter 1-{len(articles)} or new query."
