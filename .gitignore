@@ -70,3 +70,8 @@ wikipedia_fts.db
 ui_debug.log
 zim_debug.log
 setup_project.py
+
+# Local configuration (contains personal paths)
+local_config.ps1
+.env
+.env.local

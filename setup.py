@@ -52,7 +52,7 @@ setup(
     install_requires=read_requirements(),
     entry_points={
         "console_scripts": [
-            "wiki-term=wikipedia_tui.ui_curses:main",
+            "wiki=wikipedia_tui.cli:main",
         ],
     },
     keywords="wikipedia offline terminal cli zim kiwix",

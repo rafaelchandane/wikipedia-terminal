@@ -13,12 +13,18 @@
 - 🎨 **Retro UI** - Fallout-inspired green terminal interface
 - 📖 **Full Articles** - Read complete Wikipedia articles with pagination
 - 🔍 **Smart Search** - Quick title-based search with optional FTS support
+- ⚡ **Multiple Modes** - Interactive UI, quick search, direct article access
+- 🛠️ **CLI Integration** - Use `wiki` command anywhere in your terminal
 - 🖥️ **Cross-Platform** - Works on Windows, macOS, and Linux
 - 🪶 **Lightweight** - No web server, direct ZIM file access
+- 📦 **Pipe-Friendly** - Pipe output to other command-line tools
 
 ## 🎥 Demo
 
+### Interactive Mode
 ```
+$ wiki
+
 WIKIPEDIA TERMINAL
 Type a query and press Enter. q to quit.
 
@@ -40,6 +46,49 @@ philosophy emphasizes code readability with the use of significant
 indentation...
 ```
 
+### Quick Modes
+```bash
+# Quick search - list results
+$ wiki search python
+Found 100 result(s) for 'python':
+
+  1. Python (programming language)
+  2. Python Software Foundation
+  3. Monty Python
+  ...
+
+# Quick read - instant article
+$ wiki quick python
+================================================================================
+PYTHON (PROGRAMMING LANGUAGE)
+================================================================================
+
+Python is a high-level, general-purpose programming language...
+
+# Search and select workflow (NEW!)
+$ wiki search "World War 2"
+Found 6 result(s) for 'World War 2':
+
+  1. World war 2
+  2. World war 2 artillery
+  3. World war 2 by country
+  4. World war 2 deaths
+  5. World war 2 memorial
+  6. World war 2 online
+
+Tip: Use 'wiki read <number>' to open an article from this list
+
+$ wiki read 1
+================================================================================
+WORLD WAR 2
+================================================================================
+
+World War II or the Second World War (1 September 1939 – 2 September 1945)...
+
+# Or use the short alias
+$ wiki r 3
+```
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -57,7 +106,16 @@ cd wikipedia-terminal
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the application
+# Install as a command-line tool (recommended)
+pip install -e .
+
+# Now you can use 'wiki' from anywhere!
+wiki
+```
+
+Or run directly without installing:
+
+```bash
 python -m src.wikipedia_tui.ui_curses --zim /path/to/wikipedia.zim
 ```
 
@@ -71,7 +129,151 @@ export ZIM_PATH="/path/to/wikipedia_en_all_nopic_2025-08.zim"
 $env:ZIM_PATH = "C:\path\to\wikipedia_en_all_nopic_2025-08.zim"
 
 # Then run without arguments
-python -m src.wikipedia_tui.ui_curses
+wiki
+```
+
+## 🎮 Usage
+
+Wikipedia Terminal supports multiple modes for different workflows:
+
+### Interactive Mode (Default)
+
+Launch the full terminal UI:
+
+```bash
+# Start interactive mode
+wiki
+
+# Or explicitly
+wiki interactive
+```
+
+### Quick Search Mode
+
+Search and display results without entering the UI:
+
+```bash
+# Search for articles
+wiki search python programming
+
+# Limit number of results
+wiki search --limit 10 quantum physics
+
+# Short alias
+wiki s linux
+```
+
+### Read from Search Results (NEW!)
+
+After searching, read articles by their number:
+
+```bash
+# First, search for something
+wiki search "World War 2"
+# Shows numbered list (1-6)
+
+# Then read any article by number
+wiki read 1    # Opens "World war 2"
+wiki read 3    # Opens "World war 2 by country"
+
+# Short alias
+wiki r 2
+```
+
+**Tip:** The search results are cached, so you can run multiple `wiki read` commands without searching again!
+
+### Quick Read Mode
+
+Get the first matching article instantly:
+
+```bash
+# Quick lookup - displays first match
+wiki quick python
+
+# Short alias
+wiki q "machine learning"
+```
+
+### Direct Article Access
+
+Get a specific article by exact title:
+
+```bash
+# Get exact article
+wiki get "Python (programming language)"
+
+# Short alias
+wiki g "Albert Einstein"
+```
+
+### Build Search Index
+
+Create an FTS5 index for faster full-text search:
+
+```bash
+# Build index from ZIM file
+wiki build-index /path/to/wikipedia.zim -o wiki_index.db
+
+# With custom batch size and replace existing
+wiki build-index wikipedia.zim --batch 1000 --replace
+```
+
+### Navigation (Interactive Mode)
+
+- **Search**: Type your query and press Enter
+- **Select Article**: Type the article number (1, 2, 3...)
+- **Next Page**: Press `n`
+- **Previous Page**: Press `p`
+- **Go Back**: Press `b` or Enter
+- **Quit**: Press `q`
+
+### Examples
+
+```bash
+# Interactive mode (full UI)
+wiki
+
+# Quick search while coding
+wiki search "binary tree" --limit 5
+
+# Search and read workflow (NEW!)
+wiki search Sweden        # Get numbered list
+wiki read 11             # Open "Sweden (disambiguation)"
+
+# Get quick info without leaving terminal
+wiki quick "quicksort algorithm"
+
+# Read specific article
+wiki get "Merge sort"
+
+# Build search index for faster lookups
+wiki build-index ~/Downloads/wikipedia.zim
+
+# Pipe to other commands
+wiki quick python | less
+wiki get "Linux" > linux_article.txt
+```
+
+## 🛠️ Configuration
+
+### Environment Variables
+
+- `ZIM_PATH` - Path to ZIM file
+- `FTS_DB_PATH` - Path to FTS database (optional)
+- `USE_SIMPLE_INPUT` - Set to `1` to force simple input mode
+
+### Command Line Options
+
+```bash
+# Get help
+wiki --help
+
+# Get help for specific command
+wiki search --help
+wiki build-index --help
+
+# Specify ZIM file (overrides ZIM_PATH)
+wiki --zim /path/to/file.zim search python
 ```
 
 ## 📦 Recommended ZIM Files
@@ -86,53 +288,6 @@ Download from [https://download.kiwix.org/zim/wikipedia/](https://download.kiwix
 | French | ~5GB | 2.5M | Français |
 
 **Tip**: The "nopic" versions exclude images but include full text, saving significant space.
-
-## 🎮 Usage
-
-### Navigation
-
-- **Search**: Type your query and press Enter
-- **Select Article**: Type the article number (1, 2, 3...)
-- **Next Page**: Press `n`
-- **Previous Page**: Press `p`
-- **Go Back**: Press `b` or Enter
-- **Quit**: Press `q`
-
-### Examples
-
-```bash
-# Search for Python
-Query> python
-
-# Open first result
-Open # / new query / q > 1
-
-# Navigate through pages
-Page 1/156 — n/p nav, b back, q quit
-> n  # Next page
-> p  # Previous page
-> b  # Back to search results
-
-# New search
-Query> quantum physics
-```
-
-## 🛠️ Configuration
-
-### Environment Variables
-
-- `ZIM_PATH` - Path to ZIM file
-- `FTS_DB_PATH` - Path to FTS database (optional)
-- `USE_SIMPLE_INPUT` - Set to `1` to force simple input mode
-
-### Command Line Options
-
-```bash
-python -m src.wikipedia_tui.ui_curses --help
-
-Options:
-  --zim PATH    Path to ZIM file (overrides ZIM_PATH)
-```
 
 ## 🏗️ Architecture
 
@@ -194,10 +349,11 @@ See [GitHub Issues](https://github.com/rafaelchandane/wikipedia-terminal/issues)
 - ✅ Cross-platform compatibility
 - ✅ Binary search through ZIM files
 - ✅ HTML to plain text conversion
+- ✅ Multiple CLI modes (interactive, search, quick, get)
+- ✅ Command-line integration with `wiki` command
 
 **v0.1.1** (Quick Win - In Progress)
 - [ ] Complete FTS5 full-text search implementation
-- [ ] Add `--build-index` command for creating search databases
 - [ ] Progress bars and ETA for index building
 - [ ] Resume support for interrupted index builds
 
