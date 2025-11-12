@@ -7,14 +7,14 @@ import sqlite3
 from typing import List, Dict, Optional
 
 
-def search_fts(query: str, db_path: Optional[str] = None, limit: int = 100) -> List[Dict[str, any]]:
+def search_fts(query: str, db_path: Optional[str] = None, limit: int = 10000) -> List[Dict[str, any]]:
     """
     Search FTS index for articles matching query.
     
     Args:
         query: Search query string
         db_path: Optional path to FTS database file
-        limit: Maximum number of results (default: 100)
+        limit: Maximum number of results (default: 10000)
         
     Returns:
         List of dicts with 'title' and 'rowid' keys

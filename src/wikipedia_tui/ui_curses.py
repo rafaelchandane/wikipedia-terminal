@@ -35,6 +35,7 @@ from prompt_toolkit import PromptSession, print_formatted_text, HTML
 from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.shortcuts import clear as ptk_clear
 from prompt_toolkit.styles import Style
+from prompt_toolkit.key_binding import KeyBindings
 
 # Import backend modules
 try:
@@ -95,7 +96,7 @@ def clear_terminal():
 
 def _view_article(article_text: str, session: PromptSession, can_go_back: bool = False, can_go_forward: bool = False) -> str:
     """
-    Display article content with pagination.
+    Display article content with pagination and arrow key navigation.
     
     Args:
         article_text: Article content to display
@@ -140,12 +141,12 @@ def _view_article(article_text: str, session: PromptSession, can_go_back: bool =
             
             # Build navigation hints
             nav_hints = []
-            if page + 1 < total_pages or page > 0:
-                nav_hints.append("n/p nav")
+            if total_pages > 1:
+                nav_hints.append("n/p pages")
             if can_go_back:
-                nav_hints.append("← back")
+                nav_hints.append("'b' back")
             if can_go_forward:
-                nav_hints.append("→ forward")
+                nav_hints.append("'f' forward")
             nav_hints.append("Enter to search")
             nav_hints.append("q quit")
             
@@ -160,17 +161,22 @@ def _view_article(article_text: str, session: PromptSession, can_go_back: bool =
         except (KeyboardInterrupt, EOFError):
             return "exit"
 
-        if cmd == "":
+        # Handle commands
+        if cmd == "p":
+            if page > 0:
+                page -= 1
+        elif cmd == "n":
+            if page + 1 < total_pages:
+                page += 1
+        elif cmd in ("b", "back", "<"):
+            if can_go_back:
+                return "back"
+        elif cmd in ("f", "forward", ">"):
+            if can_go_forward:
+                return "forward"
+        elif cmd == "":
             return ""  # Return to search
-        elif cmd == "n" and page + 1 < total_pages:
-            page += 1
-        elif cmd == "p" and page > 0:
-            page -= 1
-        elif cmd in ("b", "back", "<") and can_go_back:
-            return "back"
-        elif cmd in ("f", "forward", ">") and can_go_forward:
-            return "forward"
-        elif cmd == "q":
+        elif cmd == "q" or cmd == "quit":
             return "quit"
 
 
@@ -310,7 +316,7 @@ def run_prompt_ui(zim_path: Optional[str] = None):
             
             if fts_index is not None:
                 try:
-                    fts_results = fts_index.search_fts(query)
+                    fts_results = fts_index.search_fts(query, limit=10000)
                     if fts_results:
                         articles = [r["title"] for r in fts_results]
                         status = f"Found {len(articles)} result(s) (FTS). Enter number to open."
@@ -327,7 +333,7 @@ def run_prompt_ui(zim_path: Optional[str] = None):
                 )
                 
                 try:
-                    articles = zim_access.search_zim(query, zim_path)
+                    articles = zim_access.search_zim(query, zim_path, max_results=10000)
                     fts_results = None  # Clear FTS cache
                 except FileNotFoundError as e:
                     status = f"ZIM file not found: {e}"

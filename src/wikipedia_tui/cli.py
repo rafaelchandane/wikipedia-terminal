@@ -77,7 +77,7 @@ def cmd_search(args: argparse.Namespace) -> int:
         results = []
         if fts_index is not None:
             try:
-                fts_results = fts_index.search_fts(query)
+                fts_results = fts_index.search_fts(query, limit=args.limit)
                 if fts_results:
                     results = [r["title"] for r in fts_results]
             except Exception:
