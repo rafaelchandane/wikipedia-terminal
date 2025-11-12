@@ -339,6 +339,16 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
+### Project Cleanup
+
+```bash
+# Debug logs and index databases are automatically git-ignored
+# They're created during development but won't be committed
+# To clean them manually:
+rm *.log *.db *.db-shm *.db-wal
+rm src/wikipedia_tui/*.log
+```
+
 ## 🗺️ Roadmap
 
 See [GitHub Issues](https://github.com/rafaelchandane/wikipedia-terminal/issues) for planned features and to vote on priorities.
